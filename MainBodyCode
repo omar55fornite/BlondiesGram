@@ -1,15 +1,18 @@
 import sqlite3
 import pandas as pd
+import os
+import datetime as dt
 
 # Initial connection to SQLite3 Database
 try:
-    conn = sqlite3.connect("/home/rausev/Documents/BlondiesGram/BlondiesGram.db/")
+    directory = os.getcwd()
+    print(directory)
+    conn = sqlite3.connect("/home/rausev/Documents/BlondiesGram/BlondiesGram.db") # Directory to be addapted
     cur = conn.cursor()
 
     print("WELCOME TO BlondiesGram")
-    print("Users registered...")
     userlist = pd.read_sql_query("SELECT username, screename FROM UsersTable", conn)
-    print(userlist)
+    logged = bool(False)
 
 except Exception as excconn:
 
@@ -18,30 +21,45 @@ except Exception as excconn:
 def f_login():
     try:
         print("Log in...")
-        usernamelogin = input("Username to log in:")
-        passwordlogin = input("Password for login:")
-        logincheckusername = pd.read_sql_query(f'SELECT screename FROM UsersTable WHERE username = "{usernamelogin}"', conn)
-        print(f"Found username: {logincheckusername}")
-        logincheckpassword = pd.read_sql_query(f'SELECT password FROM UsersTable WHERE password = "{passwordlogin}"', conn)
-        if passwordlogin == logincheckpassword:
+        usernamelogin = input("Username to log in: ")
+        passwordlogin = input("Password to log in: ")
+
+        check = pd.read_sql_query(f'SELECT Count(username) from UsersTable WHERE username = "{usernamelogin}" AND password = "{passwordlogin}"', conn)
+        stringcheck = str(check)
+        if stringcheck != '   Count(username)\n0                0':
             print(f"{usernamelogin} logged in succesfully!")
+            logged = bool(True)
+            
+            print("----------")
+            print("Starting chat log... '/help' \n")
+
+            while logged == True: # Chat log system + commands
+                msg = str(input(f"[{usernamelogin}]: "))
+                date = dt.datetime.now()
+                if msg == "/help":
+                    print("type / followed by 'logoff'")
+                if msg == "/logoff":
+                    logged = bool(False)
+            # log register
+
+                with open("/home/rausev/Documents/BlondiesGram/chatlog.txt", 'a', encoding="utf-8") as chatlog:
+                    chatlog.write(f"[{usernamelogin}]: {msg} [at {date}]\n")       
+
 
         else:
-
-            print("Failed to log in... Try again")
+            print("Invalid credentials... Please register or try again.")
             f_login()
-
-        
-
+      
     except Exception as excli:
         print(f"Could not log in... Error message: {excli}")
         f_login()
         logged = bool(False)
 
-logged = bool(False)
 
 if logged == False:
     f_login()
 
 
 conn.close # Ending connection to BlondiesGram ><
+print("----------")
+print("Connection has ended...")
