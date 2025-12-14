@@ -1,0 +1,47 @@
+import sqlite3
+import pandas as pd
+
+# Initial connection to SQLite3 Database
+try:
+    conn = sqlite3.connect("/home/rausev/Documents/BlondiesGram/BlondiesGram.db/")
+    cur = conn.cursor()
+
+    print("WELCOME TO BlondiesGram")
+    print("Users registered...")
+    userlist = pd.read_sql_query("SELECT username, screename FROM UsersTable", conn)
+    print(userlist)
+
+except Exception as excconn:
+
+    print(f"Could not connect to database... Error message: {excconn}")
+
+def f_login():
+    try:
+        print("Log in...")
+        usernamelogin = input("Username to log in:")
+        passwordlogin = input("Password for login:")
+        logincheckusername = pd.read_sql_query(f'SELECT screename FROM UsersTable WHERE username = "{usernamelogin}"', conn)
+        print(f"Found username: {logincheckusername}")
+        logincheckpassword = pd.read_sql_query(f'SELECT password FROM UsersTable WHERE password = "{passwordlogin}"', conn)
+        if passwordlogin == logincheckpassword:
+            print(f"{usernamelogin} logged in succesfully!")
+
+        else:
+
+            print("Failed to log in... Try again")
+            f_login()
+
+        
+
+    except Exception as excli:
+        print(f"Could not log in... Error message: {excli}")
+        f_login()
+        logged = bool(False)
+
+logged = bool(False)
+
+if logged == False:
+    f_login()
+
+
+conn.close # Ending connection to BlondiesGram ><
