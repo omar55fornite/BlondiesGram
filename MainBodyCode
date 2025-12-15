@@ -5,9 +5,9 @@ import datetime as dt
 
 # Initial connection to SQLite3 Database
 try:
-    directory = os.getcwd()
-    print(directory)
-    conn = sqlite3.connect("/home/rausev/Documents/BlondiesGram/BlondiesGram.db") # Directory to be addapted
+    directory = os.path.dirname(os.path.realpath(__file__))
+    print("----------")
+    conn = sqlite3.connect(f"{directory}/BlondiesGram.db") # Directory containing all files (please keep them all in same folder.)
     cur = conn.cursor()
 
     print("WELCOME TO BlondiesGram")
@@ -20,6 +20,8 @@ except Exception as excconn:
 
 def f_login():
     try:
+        directory = os.path.dirname(os.path.realpath(__file__))
+        print("----------")
         print("Log in...")
         usernamelogin = input("Username to log in: ")
         passwordlogin = input("Password to log in: ")
@@ -36,17 +38,19 @@ def f_login():
             while logged == True: # Chat log system + commands
                 msg = str(input(f"[{usernamelogin}]: "))
                 date = dt.datetime.now()
-                if msg == "/help":
-                    print("type / followed by 'logoff'")
-                if msg == "/logoff":
+                if msg == "/help": # CMD HELP
+                    print("[System]: type / followed by 'logoff'")
+                if msg == "/logoff": # CMD LOGOFF
                     logged = bool(False)
-            # log register
+            
+            # log register write
 
-                with open("/home/rausev/Documents/BlondiesGram/chatlog.txt", 'a', encoding="utf-8") as chatlog:
+                with open(f"{directory}/chatlog.txt", 'a', encoding="utf-8") as chatlog:
                     chatlog.write(f"[{usernamelogin}]: {msg} [at {date}]\n")       
 
 
         else:
+            print("----------")
             print("Invalid credentials... Please register or try again.")
             f_login()
       
@@ -62,4 +66,4 @@ if logged == False:
 
 conn.close # Ending connection to BlondiesGram ><
 print("----------")
-print("Connection has ended...")
+print("Connection has ended...\n")
